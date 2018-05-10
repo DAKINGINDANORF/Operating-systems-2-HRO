@@ -3,7 +3,6 @@
 #define TABLE_SIZE 25
 #define RUNNING 'r'
 #define PAUSED 'p'
-
 string processName[TABLE_SIZE];
 int id[TABLE_SIZE];
 char state[TABLE_SIZE];
@@ -11,52 +10,71 @@ long addr[TABLE_SIZE];
 int noOfProcesses = 0;
 int idCounter = 0;
 
+void initialise(){ //initialise lists so that all the places are empty (-1)
+  for(int i = 0; i < 25; i++){
+    id[i] = -1;
+    addr[i] = -1;
+    state[i] = PAUSED;
+  }
+}
+
+int findProcess(int i) {
+  for (int j = 0; j < noOfProcesses; j++) {
+    if(id[j] == i){
+      return j;
+    }
+
+  }
+  return -1;
+}
+
 int newProcess(string name, long address) {
-  for(int i = 0; i < processName.size(); i++){ //loop through array
+  for(int i = 0; i < noOfProcesses + 1; i++){ //loop through array
     // Check if process name and/or address isn't in use yet.
     if(name == processName[i] || address == addr[i]){
-      cout << "Address or name already in use"
+      cout << "Address or name already in use";
       return -1;
     }
+    else if(addr[i] == -1) { //if there is an empty spot
+      id[i] = idCounter;
+      processName[i] = name;
+      addr[i] = address;
+      noOfProcesses++;
+      return idCounter++;
+    }
   }
-  // Create process
-  id[i] = idCounter;
-  processName[i] = name;
-  addr[i] = address;
-  noOfProcesses++;
-  return idCounter++;
 }
 
 void removeProcess(int i) {
-  if(id[i] != NULL){ //if process exists
-    id[i] = NULL;
-    state[i] = NULL;
-    addr[i] = NULL;
-    cout << "Process " << i << "Sucesfully removed";
-  }
-  else{ //Print error message
-    cout << "Process" << i << "doesn't exist";
+  int j = findProcess(i);
+  if(j == -1){
+    cout << "Couldn't find process." << endl;
     return;
   }
-  for (int j = i; j < noOfProcesses; j++) { //Move back all after i by one spot
-    id[j] = id[j+1];
-    state[j] = state[j+1];
-    addr[j] = state[j+1];
+  cout << "Process " << i << " has been succesfully removed." <<  endl;
+  id[j] = -1;
+  state[j] = PAUSED;
+  addr[j] = -1;
+  processName[j] = " ";
+  //Move all processes after j one step backwards
+  for(int index = j; index < noOfProcesses; index++){
+    id[index] = id[index + 1];
+    state[index] = state[index + 1];
+    addr[index] = addr[index + 1];
+    processName[index] = processName[index + 1];
   }
-    idCounter--;
-    noOfProcesses--;
+  noOfProcesses--;
 }
 
 void executeProcesses() {
   long newAddr;
   for (int i = 0; i < noOfProcesses; i++) {
     if (state[i] == RUNNING) {
-
-      // TO DO
-
+      newAddr = execute(addr[i]);
+      addr[i] = newAddr;
       if (newAddr == 0) {
         cout << "Process \"" << processName[i] << "\" has terminated." << endl;
-        removeProcess(i--);
+        removeProcess(id[i]);
       } else {
         addr[i] = newAddr;
       }
@@ -70,15 +88,6 @@ void listProcesses() {
   }
 }
 
-int findProcess(int i) {
-  for (int j = 0; j < noOfProcesses; j++) {
-
-    // TO DO
-
-  }
-  return -1;
-}
-
 void suspendProcess(int i) {
   int j = findProcess(i);
   if (j == -1) {
@@ -87,11 +96,11 @@ void suspendProcess(int i) {
   }
   if (state[j] == PAUSED) {
     cout << "Process already paused." << endl;
+    return;
   }
   else {
-
-    // TO DO
-
+    state[j] = PAUSED;
+    cout << "Process " << id[j] << " has been paused" << endl;
   }
 }
 
@@ -105,9 +114,8 @@ void resumeProcess(int i) {
     cout << "Process already running." << endl;
   }
   else {
-
-    // TO DO
-
+    state[j] = RUNNING;
+    cout << "Process " << id[j] << " has been resumed" << endl;
   }
 }
 
@@ -116,14 +124,14 @@ void killProcess(int i) {
   if (j == -1) {
     cout << "Process does not exist." << endl;
   } else {
-
-    // TO DO
-
+    suspendProcess(i); //suspend process
+    removeProcess(i); //remove process
   }
 }
 
 int main() {
   unblockCin();
+  initialise();
   string command;
   while (true) {
     if (charactersAvailable()) {
@@ -142,11 +150,11 @@ int main() {
       }
       if (command == "RESUME") {
         int i = stoi(readLine());
-        resumeProcess(i)
+        resumeProcess(i);
       }
       if (command == "KILL") {
         int i = stoi(readLine());
-        killProcess(i)
+        killProcess(i);
       }
     }
     else {

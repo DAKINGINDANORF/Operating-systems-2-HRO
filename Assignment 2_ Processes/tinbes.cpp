@@ -1,5 +1,4 @@
 #include "tinbes.h"
-#include "stdafx.h"
 #define MEM 512
 #define SIZE 1024
 
@@ -60,4 +59,3 @@ int readByte(long addr) {
 long getSize() {
   return SIZE;
 }
-
