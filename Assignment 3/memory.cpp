@@ -14,9 +14,14 @@ void sort() {
     sorted = true;
     for (int i = 0; i < noOfBlocks - 1; i++) {
       if (addr[i] > addr[i + 1]) {
-
-        // TO DO
-
+        //Switch addr[i] and addr[i + 1] around
+        long tempaddr = addr[i];
+        long templength = length[i];
+        addr[i] = addr[i + 1];
+        length[i] = length[i + 1];
+        addr[i + 1] = tempaddr;
+        length[i + 1] = templength;
+        cout << "Switched " << addr[i] << "with" << addr[i+1];
         sorted = false;
       }
     }
@@ -28,11 +33,12 @@ long findFreeSpace(long size) {
   long prev = 0;
   for (int i = 0; i < noOfBlocks; i++) {
     if (addr[i] - prev > size) return prev;
-
-    // TO DO
+    else prev = addr[i];
 
   }
+  //if the max memory size - previous address fits size
   if (getMem() - prev > size) return prev;
+  //If it doesn't fit anywhere
   return -1;
 }
 
@@ -42,9 +48,10 @@ void allocate(long size) {
     cout << "Not enough memory." << endl;
   }
   else {
-
-    // TO DO
-
+    //Set addr[i] to found freespace
+    addr[i] = f;
+    length[i] = size;
+    noOfBlocks++;
     cout << f << endl;
   }
 }
@@ -57,10 +64,13 @@ void deallocate(long a) {
       noOfBlocks--;
     }
     if (found) {
-
-      // TO DO
-
+      //move every allocated memory one place back in array, deallocting a
+      for(int i = a; i < addr.size(); i++){
+        addr[i] = addr[i+1];
+        length][i] = size[i+1];
+      }
     }
+    cout << "Address " + a << " deallocated";
   }
   if (!found) cout << "Address not allocated." << endl;
 }
@@ -68,9 +78,8 @@ void deallocate(long a) {
 long freeMem() {
   long total = getMem();
   for (int i = 0; i < noOfBlocks; i++) {
-
-    // TO DO
-
+    //subtract the length of all allocated memory
+    total = total - length[i];
   }
   return total;
 }
@@ -149,6 +158,8 @@ void store(long a, string type, string data) {
   long size;
   if (type == "CHAR") size = 1;
   if (type == "INT") size = 2;
+  if (type == "FLOAT") size = 4;
+  if (type == "STRING") size = 1;
 
   // TO DO
 
@@ -219,7 +230,7 @@ string retrieveString(long a) {
   string ret;
   char c;
   while ((c = (char)recallByte(a++)) != '\0') {
-
+    ret = ret + c;
     // TO DO
 
   }
