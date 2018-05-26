@@ -33,10 +33,11 @@ long findFreeSpace(long size) {
   long prev = 0;
   for (int i = 0; i < noOfBlocks; i++) {
     if (addr[i] - prev > size) return prev;
-    else prev = addr[i];
-
+    else prev = length[i];
+    cout << "PREV " << prev << endl;
   }
   //if the max memory size - previous address fits size
+  cout << "Komtiehier";
   if (getMem() - prev > size) return prev;
   //If it doesn't fit anywhere
   return -1;
@@ -48,11 +49,10 @@ void allocate(long size) {
     cout << "Not enough memory." << endl;
   }
   else {
-    //Set addr[i] to found freespace
-    addr[i] = f;
-    length[i] = size;
-    noOfBlocks++;
-    cout << f << endl;
+      addr[noOfBlocks] = f;
+      length[noOfBlocks] = size;
+      noOfBlocks++;
+      cout << f << endl;
   }
 }
 
@@ -65,9 +65,9 @@ void deallocate(long a) {
     }
     if (found) {
       //move every allocated memory one place back in array, deallocting a
-      for(int i = a; i < addr.size(); i++){
+      for(int i = a; i < 25 - a; i++){
         addr[i] = addr[i+1];
-        length][i] = size[i+1];
+        length[i] = length[i+1];
       }
     }
     cout << "Address " + a << " deallocated";
@@ -272,12 +272,12 @@ int main() {
   while (true) {
     command = readLine();
     if (command == "ALLOC") {
-      long size = readLine();
-      cout << allocate(size) << endl;
+      long size = stoi(readLine());
+      allocate(size);
     }
     if (command == "DEALLOC") {
-      long address = readLine();
-      cout << deallocate(address) << endl;
+      long address = stoi(readLine());
+      deallocate(address);
     }
     if (command == "FREEMEM") {
       cout << freeMem() << endl;
@@ -289,7 +289,7 @@ int main() {
       store(i, type, data);
     }
     if (command == "GET") {
-      long address = readLine();
+      long address = stoi(readLine());
       string type = readLine();
       cout << retrieve(address, type) << endl;
     }
