@@ -30,16 +30,14 @@ void sort() {
 
 long findFreeSpace(long size) {
   sort();
-  long prev = 0;
-  for (int i = 0; i < noOfBlocks; i++) {
-    if (addr[i] - prev > size) return prev;
-    else prev = length[i];
-    cout << "PREV " << prev << endl;
+  for (int i = 0; i < noOfBlocks - 1; i++) {
+    //check if there is space between 2 used addresses
+    if(addr[i + 1] - (addr[i] + size[i]) > size){
+      return addr[i] + size[i];
+    }
   }
-  //if the max memory size - previous address fits size
-  cout << "Komtiehier";
-  if (getMem() - prev > size) return prev;
-  //If it doesn't fit anywhere
+  //if there is space left after the last address used
+  if (getMem() - addr[noOfBlocks - 1] > size) return addr[noOfBlocks - 1] + 1;
   return -1;
 }
 
@@ -57,34 +55,33 @@ void allocate(long size) {
 }
 
 void deallocate(long a) {
-  bool found = false;
   for (int i = 0; i < noOfBlocks; i++) {
-    if (addr[i] == a) {
-      found = true;
-      noOfBlocks--;
-    }
-    if (found) {
+     if (addr[i] == a) {
       //move every allocated memory one place back in array, deallocting a
-      for(int i = a; i < 25 - a; i++){
-        addr[i] = addr[i+1];
-        length[i] = length[i+1];
+        for(int j = i; j <  noOfBlocks; j++){
+          addr[j] = addr[j+1];
+          length[j] = length[j+1];
+        }
+        noOfBlocks--;
+        cout << "Address " + a << " deallocated";
+        return;
       }
     }
-    cout << "Address " + a << " deallocated";
   }
   if (!found) cout << "Address not allocated." << endl;
+  return;
 }
 
 long freeMem() {
   long total = getMem();
-  for (int i = 0; i < noOfBlocks; i++) {
+  for (int i = 0; i < noOfBlocks - 1; i++) {
     //subtract the length of all allocated memory
     total = total - length[i];
   }
   return total;
 }
 
-void storeChar(long a, string data) {
+void storeChar(long a, string data){
   storeByte(data[0], a);
 }
 
