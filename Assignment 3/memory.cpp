@@ -21,7 +21,6 @@ void sort() {
         length[i] = length[i + 1];
         addr[i + 1] = tempaddr;
         length[i + 1] = templength;
-        cout << "Switched " << addr[i] << "with" << addr[i+1];
         sorted = false;
       }
     }
@@ -30,14 +29,22 @@ void sort() {
 
 long findFreeSpace(long size) {
   sort();
+  // If there is not a block allocated yet
+  if(noOfBlocks == 0){
+    return 0;
+  }
+  // If there is space between 0 and the first address
+  else if(addr[0] >= size){
+    return 0;
+  }
+      //check if there is space between 2 used addresses
   for (int i = 0; i < noOfBlocks - 1; i++) {
-    //check if there is space between 2 used addresses
-    if(addr[i + 1] - (addr[i] + size[i]) > size){
-      return addr[i] + size[i];
+    if(addr[i + 1] - (addr[i] + length[i]) >= size){
+      return addr[i] + length[i];
     }
   }
   //if there is space left after the last address used
-  if (getMem() - addr[noOfBlocks - 1] > size) return addr[noOfBlocks - 1] + 1;
+  if (getMem() - (addr[noOfBlocks - 1] +  length[noOfBlocks - 1]) >= size) return addr[noOfBlocks - 1] + length[noOfBlocks - 1];
   return -1;
 }
 
@@ -55,7 +62,7 @@ void allocate(long size) {
 }
 
 void deallocate(long a) {
-  for (int i = 0; i < noOfBlocks; i++) {
+  for (int i = 0; i < noOfBlocks - 1; i++) {
      if (addr[i] == a) {
       //move every allocated memory one place back in array, deallocting a
         for(int j = i; j <  noOfBlocks; j++){
@@ -63,18 +70,16 @@ void deallocate(long a) {
           length[j] = length[j+1];
         }
         noOfBlocks--;
-        cout << "Address " + a << " deallocated";
+        cout << "Address " << a << " deallocated" << endl;
         return;
-      }
     }
   }
-  if (!found) cout << "Address not allocated." << endl;
-  return;
+  cout << "Address not allocated." << endl;
 }
 
 long freeMem() {
   long total = getMem();
-  for (int i = 0; i < noOfBlocks - 1; i++) {
+  for (int i = 0; i < noOfBlocks; i++) {
     //subtract the length of all allocated memory
     total = total - length[i];
   }
@@ -158,8 +163,6 @@ void store(long a, string type, string data) {
   if (type == "FLOAT") size = 4;
   if (type == "STRING") size = 1;
 
-  // TO DO
-
   bool fits = false;
   for (int i = 0; i < noOfBlocks; i++) {
     if (a >= addr[i] && a + size <= addr[i] + length[i]) {
@@ -186,39 +189,20 @@ void store(long a, string type, string data) {
 }
 
 string retrieveChar(long a) {
-  string ret;
-
-  // TO DO
-
-  return ret;
+  string str(1, static_cast<char>(recallByte(a)));
+  return str;
 }
 
 string retrieveInt(long a) {
-  int b1 = recallByte(a);
-  int b2 = recallByte(a + 1);
-  int i;
-
-  // TO DO
-
-  return to_string(i);
+    int b1 = recallByte(a);
+    int b2 = recallByte(a + 1);
+    int i;
+    i = ((b1 << 8) | b2);
+    return to_string(i);
 }
 
 string retrieveFloat(long a) {
-  unsigned char b = recallByte(a);
-  float sign = 1;
-  if (b & 128) sign = -1;
-  int exponent = (b & 0x7F) << 1;
-  b = recallByte(a + 1);
-  if (b & 128) exponent++;
-  exponent -= 127;
-  long mantissa = ((long)b | 128) << 16;
-  b = recallByte(a + 2);
-  mantissa += (long)b << 8;
-  b = recallByte(a + 3);
-  mantissa += b;
-  float number;
-
-  // TO DO
+  float number = float(recallByte(a));
 
   return to_string(number);
 }
@@ -228,7 +212,6 @@ string retrieveString(long a) {
   char c;
   while ((c = (char)recallByte(a++)) != '\0') {
     ret = ret + c;
-    // TO DO
 
   }
   return ret;

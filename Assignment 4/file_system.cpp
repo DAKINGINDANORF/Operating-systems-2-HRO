@@ -31,17 +31,24 @@ void sort() {
   }
 }
 
-long findFreeSpace(long fileSize) {
+long findFreeSpace(long size) {
   sort();
-  long prev = 0;
-  for (int i = 0; i < noOfFiles; i++) {
-    //check if there is space between 2 used addresses
-    if(addr[i + 1] - addr[i] + size[i] > fileSize){
-      return addr[i] + size[i];
+  // If there is not a block allocated yet
+  if(noOfFiles == 0){
+    return 0;
+  }
+  // If there is space between 0 and the first address
+  else if(addr[0] >= size){
+    return 0;
+  }
+      //check if there is space between 2 used addresses
+  for (int i = 0; i < noOfFiles - 1; i++) {
+    if(addr[i + 1] - (addr[i] + length[i]) >= size){
+      return addr[i] + length[i];
     }
   }
   //if there is space left after the last address used
-  if (getMem() - prev > fileSize) return prev;
+  if (getMem() - (addr[noOfFiles - 1] +  length[noOfFiles - 1]) >= size) return addr[noOfFiles - 1] + length[noOfFiles - 1];
   return -1;
 }
 
