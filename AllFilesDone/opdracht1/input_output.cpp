@@ -87,7 +87,7 @@ string sendMorse(char character) {
        }
   }
 
-  for(int index = 1; index < line.length() - 1; index = index + 1){ //Checks every symbol on the selected line for dashes and dots.
+  for(int index = 1; index < line.length(); index = index + 1){ //Checks every symbol on the selected line for dashes and dots.
     if(line.at(index) == '.'){
       dot();
       characterInMorse += '.';
