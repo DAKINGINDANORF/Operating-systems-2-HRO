@@ -1,1 +1,1 @@
-.\qemu-system-arm -nographic -monitor none -serial stdio -cpu arm1176 -m 256 -M versatilepb -kernel "C:\Users\Tommie\Desktop\OSfinal\Final\solution\solution"
+.\qemu-system-arm -nographic -monitor none -serial stdio -cpu arm1176 -m 256 -M versatilepb -kernel "C:\Users\Tommie\Documents\Operating-systems-2-HRO\AllFilesDone\finalAssignment\kernel"

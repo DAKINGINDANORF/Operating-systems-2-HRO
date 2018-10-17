@@ -19,42 +19,6 @@ char decodeMorse(string s) {
   return morse[p];
 }
 
-//not relevant for assignment
-void switchChanged() {
-  static string buffer;
-  static unsigned int previousTime = 0, currentTime, timePassed;
-  currentTime = millis();
-  if (previousTime == 0) { // first pulse
-    previousTime = currentTime;
-    return;
-  }
-  timePassed = currentTime - previousTime;
-  previousTime = currentTime;
-  if (digitalRead(INPUT_PIN) == LOW) { // switch pressed
-    if (timePassed > 200) {
-
-      // TO DO
-
-    }
-    if (timePassed > 600) {
-
-      // TO DO
-
-    }
-  } else { // switch released
-    if (timePassed > 200) {
-
-      // TO DO
-
-    }
-    else {
-
-      // TO DO
-
-    }
-  }
-}
-
 void wait(int n) {
   delay(100 * n);
 }
